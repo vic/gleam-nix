@@ -22,7 +22,7 @@ the latest commit on `main` branch.
 
 ```shell
 # The latest commit from Gleam's main branch. (can be a commit hash, tag or branch name)
-nix shell github:vic/gleam-nix --override-flake gleam github:gleam-lang/gleam/main -c gleam --help
+nix shell github:vic/gleam-nix --override-input gleam github:gleam-lang/gleam/main -c gleam --help
 ```
 
 Gleam maintainers can also use this to try PR experimental features
@@ -31,7 +31,7 @@ comes from specifying the repository/branch name.
 
 ```shell
 # running gleam to try other people branches:
-nix shell github:vic/gleam-nix  --override-input gleam github:<someone>/gleam/<cool-feature> -c gleam --help
+nix shell github:vic/gleam-nix --override-input gleam github:<someone>/gleam/<cool-feature> -c gleam --help
 ```
 
 ## Developing Gleam with a Nix environment.
@@ -41,11 +41,11 @@ development environment in an instant, all you have to do is
 checkout the Gleam repo and run:
 
 ```shell
-nix develop github:vic/gleam-nix --override-input gleam $PWD # -c fish # you might use your preferred shell
+nix develop github:vic/gleam-nix --override-input gleam path:$PWD # -c fish # you might use your preferred shell
 # open your editor and hack hack hack..
 cargo build # build dependencies are loaded in your shell
 # or 
-nix run github:vic/gleam-nix --override-input gleam $PWD -- --help # runs your local `gleam --help`
+nix run github:vic/gleam-nix --override-input gleam path:$PWD -- --help # runs your local `gleam --help`
 ```
 
 ## flake.nix
@@ -66,7 +66,8 @@ to regenerate the lock file.
 Whenever we add or change dependencies on our Cargo workspace, we should
 regenerate the `Cargo.nix` file by using [cargo2nix](https://github.com/cargo2nix/cargo2nix).
 
-The following command should do it:
+Clone the Gleam repo and run the following command, then copy the generated
+`Cargo.nix` into this repo.
 
 ```shell
 nix shell github:cargo2nix/cargo2nix/master -c cargo2nix -f
