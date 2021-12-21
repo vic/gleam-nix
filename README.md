@@ -7,6 +7,9 @@ This guide documents how people using the Nix package manager or
 NixOS systems can easily build every version of Gleam with just
 a single command.
 
+<img width="1027" alt="Screen Shot 2021-12-20 at 18 31 47" src="https://user-images.githubusercontent.com/331/146850903-6fd42dda-cef3-4f3b-a720-1916ba91ca22.png">
+
+
 ##### Requirements
 
 For using this guide you'll need `nix` version [2.4](https://discourse.nixos.org/t/nix-2-4-released/15822)
