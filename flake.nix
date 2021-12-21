@@ -3,6 +3,9 @@
     gleam.url = "github:gleam-lang/gleam";
     gleam.flake = false;
 
+    flake-compat.url = "github:edolstra/flake-compat";
+    flake-compat.flake = false;
+
     nixpkgs.url = "github:nixos/nixpkgs?ref=release-21.05";
      
     cargo2nix.url = "github:cargo2nix/cargo2nix";
