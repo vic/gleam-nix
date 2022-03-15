@@ -6,7 +6,7 @@
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=release-21.05";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=22.05-pre";
      
     cargo2nix.url = "github:cargo2nix/cargo2nix";
     flake-utils.url = "github:numtide/flake-utils";
@@ -28,7 +28,7 @@
         };
 
         rustPkgs = pkgs.rustBuilder.makePackageSet' {
-          rustChannel = "1.57.0";
+          rustChannel = "1.59.0";
           packageFun = import ./Cargo.nix;
           workspaceSrc = gleam;
         };
