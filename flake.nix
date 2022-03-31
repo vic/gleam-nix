@@ -32,12 +32,17 @@
           packageFun = import ./Cargo.nix;
           workspaceSrc = gleam;
         };
+
+        workspaceShell = rustPkgs.workspaceShell {
+          nativeBuildInputs = with pkgs; [ rust-analyzer ];
+        };
       in rec {
         packages = {
           gleam = (rustPkgs.workspace.gleam {}).bin;
+          default = packages.gleam;
         };
 
-        defaultPackage = packages.gleam;
+        devShells.default = workspaceShell;
       }
     );
 }
