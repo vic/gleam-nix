@@ -68,10 +68,10 @@
             drv = with pkgs;
               writeScriptBin "genCargoNix.bash" ''
                 set -xeo pipefail
-                GLEAM_SRC="''${GLEAM_SRC:-$PWD/../gleam}"
-                GLEAM_NIX="''${GLEAM_NIX:-$PWD}"
-                cd "''$GLEAM_SRC"
-                ${cargo2nix.defaultPackage.${system}}/bin/cargo2nix -f ''${GLEAM_NIX}/Cargo.nix
+                GLEAM_SRC="''${1:-$PWD/../gleam}"
+                GLEAM_NIX="''${2:-$PWD}"
+                cd "$GLEAM_SRC"
+                ${cargo2nix.defaultPackage.${system}}/bin/cargo2nix -f $GLEAM_NIX/Cargo.nix
               '';
           };
         };
@@ -87,7 +87,8 @@
             };
         };
       in {inherit packages devShells apps checks;}
-    ) // {
-      overlays.default = final: prev: { inherit (self.packages.${final.system}) gleam; };
+    )
+    // {
+      overlays.default = final: prev: {inherit (self.packages.${final.system}) gleam;};
     };
 }
