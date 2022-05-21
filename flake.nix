@@ -9,6 +9,7 @@
     nixpkgs.url = "github:nixos/nixpkgs?ref=22.05-pre";
      
     cargo2nix.url = "github:cargo2nix/cargo2nix";
+    cargo2nix.inputs.nixpkgs.follows = "nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
@@ -36,13 +37,38 @@
         workspaceShell = rustPkgs.workspaceShell {
           nativeBuildInputs = with pkgs; [ rust-analyzer ];
         };
-      in rec {
+
+	gleamBin = (rustPkgs.workspace.gleam {}).bin;
+
         packages = {
-          gleam = (rustPkgs.workspace.gleam {}).bin;
-          default = packages.gleam;
+          gleam = gleamBin;
+          default = gleamBin;
         };
 
         devShells.default = workspaceShell;
-      }
+
+	apps = {
+	  default = flake-utils.lib.mkApp { drv = gleamBin; };
+	  genCargoNix = flake-utils.lib.mkApp { 
+	    drv = with pkgs; writeScriptBin "genCargoNix.bash" ''
+	    set -xeo pipefail
+	    GLEAM_SRC="''${GLEAM_SRC:-$PWD/../gleam}" 
+	    GLEAM_NIX="''${GLEAM_NIX:-$PWD}"
+	    ${cargo2nix.defaultPackage.${system}}/bin/cargo2nix -f ''${GLEAM_NIX}/Cargo.nix
+	    '';
+	  };
+	};
+
+	checks = {
+	  gleamHello = with pkgs; stdenvNoCC.mkDerivation {
+	    name = "gleam-hello";
+            phases = ["test"];
+	    test = ''
+	    ${gleamBin}/bin/gleam --help > $out
+	    '';
+	  };
+	};
+
+      in { inherit packages devShells apps checks; }
     );
 }
