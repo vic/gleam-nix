@@ -12,7 +12,7 @@ a single command.
 
 ##### Requirements
 
-For using this guide you'll need `nix` version [2.4](https://discourse.nixos.org/t/nix-2-4-released/15822)
+For using this guide you'll need `nix` version [2.8](https://discourse.nixos.org/t/nix-2-8-0-released/18714)
 or latter which must have the [`flakes`](https://nixos.wiki/wiki/Flakes) feature enabled.
 
 See [nix quick-install](https://nixos.org/download.html) or the [install-nix tutorial](https://nix.dev/tutorials/install-nix)
@@ -66,12 +66,10 @@ to regenerate the lock file.
 
 ## Regenerating `Cargo.nix`
 
-Whenever we add or change dependencies on our Cargo workspace, we should
-regenerate the `Cargo.nix` file by using [cargo2nix](https://github.com/cargo2nix/cargo2nix).
-
-Clone the Gleam repo and run the following command, then copy the generated
-`Cargo.nix` into this repo.
+From time to time the `Cargo.nix` file needs to be re-generated
+by using [cargo2nix](https://github.com/cargo2nix/cargo2nix)
+in order to keep Gleam's cargo deps nix-controlled.
 
 ```shell
-nix shell github:cargo2nix/cargo2nix/master -c cargo2nix -f
+make generate
 ```
