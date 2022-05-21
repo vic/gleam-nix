@@ -54,6 +54,7 @@
 	    set -xeo pipefail
 	    GLEAM_SRC="''${GLEAM_SRC:-$PWD/../gleam}" 
 	    GLEAM_NIX="''${GLEAM_NIX:-$PWD}"
+	    cd "''$GLEAM_SRC"
 	    ${cargo2nix.defaultPackage.${system}}/bin/cargo2nix -f ''${GLEAM_NIX}/Cargo.nix
 	    '';
 	  };
