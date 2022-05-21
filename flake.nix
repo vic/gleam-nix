@@ -52,8 +52,6 @@
           default = gleamBin;
         };
 
-	overlay = final: prev: { gleam = gleamBin; };
-
         devShells.default = workspaceShell;
 
         apps = {
@@ -88,6 +86,8 @@
               '';
             };
         };
-      in {inherit overlay packages devShells apps checks;}
-    );
+      in {inherit packages devShells apps checks;}
+    ) // {
+      overlays.default = final: prev: { inherit (self.packages.${final.system}) gleam; };
+    };
 }
