@@ -1,5 +1,7 @@
 # Reproducible builds for Gleam.
 
+[![Build history](https://buildstats.info/github/chart/vic/gleam-nix?branch=main)](https://github.com/vic/gleam-nix/actions)
+
 [nix](https://nixos.org/) is a purely functional package manager with
 fully-cacheable, to-the-byte reproducible builds. 
 
