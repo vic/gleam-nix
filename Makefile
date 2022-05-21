@@ -1,6 +1,6 @@
 .PHONY: all
 
-all: update generate test
+all: fmt-check update generate test
 
 update:
 	nix flake update
@@ -10,3 +10,9 @@ generate:
 
 test:
 	nix flake check
+
+fmt:
+	nix run '.#fmt'
+
+fmt-check:
+	nix run '.#fmt' -- --check
