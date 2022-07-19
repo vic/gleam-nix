@@ -6,7 +6,7 @@
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=nixpkgs-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=22.05";
 
     cargo2nix.url = "github:cargo2nix/cargo2nix";
     cargo2nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -30,13 +30,13 @@
         pkgs = import nixpkgs {
           inherit system;
           overlays = [
-            cargo2nix.overlay
-            rust-overlay.overlay
+            cargo2nix.overlays.default
+            rust-overlay.overlays.default
           ];
         };
 
         rustPkgs = pkgs.rustBuilder.makePackageSet {
-          rustChannel = "1.59.0";
+          rustChannel = "1.60.0";
           packageFun = import ./Cargo.nix;
           workspaceSrc = gleam;
         };
@@ -67,11 +67,11 @@
           genCargoNix = flake-utils.lib.mkApp {
             drv = with pkgs;
               writeScriptBin "genCargoNix.bash" ''
-                set -xeo pipefail
-                GLEAM_SRC="''${1:-$PWD/../gleam}"
+                set -xeuo pipefail
+                GLEAM_SRC="''${1:-${gleam}}"
                 GLEAM_NIX="''${2:-$PWD}"
                 cd "$GLEAM_SRC"
-                ${cargo2nix.defaultPackage.${system}}/bin/cargo2nix -f $GLEAM_NIX/Cargo.nix
+                ${cargo2nix.packages.${system}.default}/bin/cargo2nix --stdout > $GLEAM_NIX/Cargo.nix
               '';
           };
         };
