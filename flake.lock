@@ -72,11 +72,11 @@
     },
     "flake-utils_2": {
       "locked": {
-        "lastModified": 1656928814,
-        "narHash": "sha256-RIFfgBuKz6Hp89yRr7+NR5tzIAbn52h8vT6vXkYjZoM=",
+        "lastModified": 1659877975,
+        "narHash": "sha256-zllb8aq3YO3h8B/U0/J1WBgAL8EX5yWf5pMj3G0NAmc=",
         "owner": "numtide",
         "repo": "flake-utils",
-        "rev": "7e2a3b3dfd9af950a856d66b0a7d01e3c18aa249",
+        "rev": "c0e246b9b83f637f4681389ecabcb2681b4f3af0",
         "type": "github"
       },
       "original": {
@@ -88,11 +88,11 @@
     "gleam": {
       "flake": false,
       "locked": {
-        "lastModified": 1658180929,
-        "narHash": "sha256-Q5uZQgpgjq/k2xPwVHoYE0WnWiukvsjv+W2pq1hGR6M=",
+        "lastModified": 1661793533,
+        "narHash": "sha256-ylmuKGNMKzWlTPcyoKeTaLtHbZZjF6QCaLJZfIsAIJI=",
         "owner": "gleam-lang",
         "repo": "gleam",
-        "rev": "ca876235ed530cfc2d77fc74e3675093af9b3dfe",
+        "rev": "54c67eef16c32b5ad1b5824ac4e04a2bdfeed48e",
         "type": "github"
       },
       "original": {
@@ -162,11 +162,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1658199402,
-        "narHash": "sha256-R/Zp+fQ6e0iVTOgcZuXFtnD9O6yjxgdHmCtp3g+zz78=",
+        "lastModified": 1661828444,
+        "narHash": "sha256-PDVS1L+rfCanIzmtpjouySfeS1UoPGOj/hZzz3POjPA=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "6c4ea1e705e497e064ab82fb90ad99a50b15aba8",
+        "rev": "6bc5e02b2bcd94568813ab238e3b567c84647b84",
         "type": "github"
       },
       "original": {
