@@ -20,6 +20,14 @@ or latter which must have the [`flakes`](https://nixos.wiki/wiki/Flakes) feature
 See [nix quick-install](https://nixos.org/download.html) or the [install-nix tutorial](https://nix.dev/tutorials/install-nix)
 for more in depth instructions.
 
+## Installing Gleam locally (~/.nix-profile)
+
+```shell
+# This will install gleam from latest commit on main branch.
+nix profile install github:vic/gleam-nix --override-input gleam github:gleam-lang/gleam/main
+gleam --help
+```
+
 ## Running Gleam nightly. (or any branch/commit)
 
 The following command runs `gleam --help` on the build from
