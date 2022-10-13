@@ -88,11 +88,11 @@
     "gleam": {
       "flake": false,
       "locked": {
-        "lastModified": 1661793533,
-        "narHash": "sha256-ylmuKGNMKzWlTPcyoKeTaLtHbZZjF6QCaLJZfIsAIJI=",
+        "lastModified": 1665692382,
+        "narHash": "sha256-abZuX46GX98QWTLRF6/bxVWEq1aMuH/9vLLw6x2ZKLU=",
         "owner": "gleam-lang",
         "repo": "gleam",
-        "rev": "54c67eef16c32b5ad1b5824ac4e04a2bdfeed48e",
+        "rev": "3c852f9476b0436f1c9c7871a7731ef8812d3366",
         "type": "github"
       },
       "original": {
@@ -162,11 +162,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1661828444,
-        "narHash": "sha256-PDVS1L+rfCanIzmtpjouySfeS1UoPGOj/hZzz3POjPA=",
+        "lastModified": 1665630024,
+        "narHash": "sha256-xXfneoHz4h4JR58leKFoHIIapAffWlOL9HI37vwuspo=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "6bc5e02b2bcd94568813ab238e3b567c84647b84",
+        "rev": "73650741960a7422d1422f156f76211e576610c2",
         "type": "github"
       },
       "original": {
