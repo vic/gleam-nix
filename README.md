@@ -5,7 +5,7 @@
   # If you already have Nix installed, try Gleam right away by using:
   $ nix shell github:vic/gleam-nix
   $ gleam --version
-  gleam <a href="https://github.com/gleam-lang/gleam/commit/9ba0a5f">0.29.0-rc1</a>
+  gleam <a href="https://github.com/gleam-lang/gleam/v0.30.0">0.30.0</a>
  </code>
 </pre>
 
