@@ -1,6 +1,6 @@
 {
   inputs = {
-    gleam.url = "github:gleam-lang/gleam";
+    gleam.url = "github:gleam-lang/gleam/v0.30.0";
     gleam.flake = false;
 
     flake-compat.url = "github:edolstra/flake-compat";
