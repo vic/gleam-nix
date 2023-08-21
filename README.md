@@ -11,9 +11,21 @@
 
 [![Build history](https://buildstats.info/github/chart/vic/gleam-nix?branch=main)](https://github.com/vic/gleam-nix/actions)
 
+###### Stable releases at nixpkgs#gleam
+ 
+There exists an stable-release gleam derivation on nixpkgs. To use it, simply do:
+
+```
+nix shell nixpkgs#gleam
+gleam --version
+```
+
+The flake provided on this repo is most likely to be used by people hacking on gleam itself or
+willing to build some experimental branches.
+
 ##### Requirements
 
-For using this guide you'll need `nix` version [2.8](https://discourse.nixos.org/t/nix-2-8-0-released/18714)
+For using this flake you'll need `nix` version [2.8](https://discourse.nixos.org/t/nix-2-8-0-released/18714)
 or latter which must have the [`flakes`](https://nixos.wiki/wiki/Flakes) feature enabled.
 
 See [nix quick-install](https://nixos.org/download.html) or the [install-nix tutorial](https://nix.dev/tutorials/install-nix)
