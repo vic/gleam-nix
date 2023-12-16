@@ -1,12 +1,12 @@
 {
   inputs = {
-    gleam.url = "github:gleam-lang/gleam/v0.30.0";
+    gleam.url = "github:gleam-lang/gleam/v0.32.4";
     gleam.flake = false;
 
     flake-compat.url = "github:edolstra/flake-compat";
     flake-compat.flake = false;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=22.11";
+    nixpkgs.url = "github:nixos/nixpkgs?ref=23.11";
 
     cargo2nix.url = "github:cargo2nix/cargo2nix";
     cargo2nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -36,7 +36,7 @@
         };
 
         rustPkgs = pkgs.rustBuilder.makePackageSet {
-          rustChannel = "1.69.0";
+          rustChannel = "1.74.0";
           packageFun = import ./Cargo.nix;
           workspaceSrc = gleam;
         };
@@ -68,10 +68,9 @@
             drv = with pkgs;
               writeScriptBin "genCargoNix.bash" ''
                 set -xeuo pipefail
-                GLEAM_SRC="''${1:-${gleam}}"
-                GLEAM_NIX="''${2:-$PWD}"
-                cd "$GLEAM_SRC"
-                ${cargo2nix.packages.${system}.default}/bin/cargo2nix --stdout > $GLEAM_NIX/Cargo.nix
+                GLEAM_NIX="''${1:-$PWD}"
+                GLEAM_SRC="''${2:-${gleam}}"
+                ${cargo2nix.packages.${system}.default}/bin/cargo2nix "$GLEAM_SRC" --locked --file $GLEAM_NIX/Cargo.nix
               '';
           };
         };
