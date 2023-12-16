@@ -8,8 +8,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v4
+      uses: DeterminateSystems/nix-installer-action@v9
     - name: Magic Nix Cache
-      uses: DeterminateSystems/magic-nix-cache-action@v1
+      uses: DeterminateSystems/magic-nix-cache-action@v2
     - name: Test flake output
       run: nix flake check
