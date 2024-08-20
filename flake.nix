@@ -60,6 +60,7 @@
           fmt = flake-utils.lib.mkApp {
             drv = with pkgs;
               writeScriptBin "fmt" ''
+                #!/bin/bash
                 ${pkgs.alejandra}/bin/alejandra "$@" -e ./Cargo.nix .
               '';
           };
@@ -67,6 +68,7 @@
           genCargoNix = flake-utils.lib.mkApp {
             drv = with pkgs;
               writeScriptBin "genCargoNix.bash" ''
+                #!/bin/bash
                 set -xeuo pipefail
                 GLEAM_NIX="''${1:-$PWD}"
                 GLEAM_SRC="''${2:-${gleam}}"
