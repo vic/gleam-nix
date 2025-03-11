@@ -17,7 +17,6 @@ gleam 1.9.1
 
 > For previous versions see [Historic Builds](https://github.com/vic/gleam-nix/wiki/Historic-Builds)
 
-
 ### Hack with Gleam
 
 If you are creating a new awesome project with Gleam,
