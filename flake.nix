@@ -17,7 +17,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    gleam.url = "github:gleam-lang/gleam/v1.9.0";
+    gleam.url = "github:gleam-lang/gleam";
     gleam.flake = false;
 
     rust-manifest.url = "https://static.rust-lang.org/dist/channel-rust-1.85.0.toml";
