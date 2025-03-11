@@ -7,7 +7,6 @@
 }:
 let
   gleamNix = pkgs.callPackage ../gleam.nix { inherit inputs; };
-  flakeLock = builtins.fromJSON (builtins.readFile "${inputs.self}/flake.lock");
 
   treefmt = {
     name = "treefmt";
@@ -30,12 +29,13 @@ let
   show-gleam-version = {
     name = "show-gleam-version";
     help = "Display gleam revision and version";
-    command = ''
-      echo gleam-rev ${flakeLock.nodes.gleam.locked.rev}
-      ${gleamNix}/bin/gleam --version
-      echo rust-manifest ${flakeLock.nodes.rust-manifest.locked.url}
-      ${gleamNix.gleamDevPackages.cargo}/bin/cargo --version
-    '';
+    command =
+      let
+        file = pkgs.writeText "gleam.json" (builtins.toJSON gleamNix.versionInfo);
+      in
+      ''
+        ${pkgs.lib.getExe pkgs.jq} -r . ${file}
+      '';
   };
 
 in

@@ -42,10 +42,29 @@ let
   # Access to the fenix overlay rust toolchains.
   inherit (pkgs') fenixPackages;
 
+  rustVersion =
+    with pkgs'.lib;
+    pipe fenixPackages.manifest.pkg.rust.version [
+      (replaceStrings [ "(" ")" ] [ "" "" ])
+      (splitString " ")
+      (arr: {
+        version = elemAt arr 0;
+        rev = elemAt arr 1;
+        release = elemAt arr 2;
+      })
+    ];
+
+  versionInfo = {
+    gleam.rev = inputs.gleam.shortRev;
+    gleam.version = gleam.version;
+    rust = rustVersion;
+  };
+
 in
 gleam
 // {
   inherit
+    versionInfo
     cargoNix
     gleamDevPackages
     devPackages
