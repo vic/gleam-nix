@@ -8,12 +8,15 @@ working with [Gleam] projects using Nix.
 ```
 # running `gleam --version`
 $ nix run github:vic/gleam-nix -- --version
-gleam 1.9.1
+gleam 1.9.0
 
 # you can override gleam to any specific release/branch/fork.
-$ nix run github:vic/gleam-nix --override-input gleam "github:gleam-lang/gleam?ref=v1.9.0" -- --version
-gleam 1.9.0
+$ nix run github:vic/gleam-nix --override-input gleam "github:gleam-lang/gleam?ref=main" -- --version
+gleam 1.9.1
 ```
+
+> For previous versions see [Historic Builds](https://github.com/vic/gleam-nix/wiki/Historic-Builds)
+
 
 ### Hack with Gleam
 
