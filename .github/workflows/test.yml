@@ -1,15 +1,15 @@
-name: "Test"
 on:
   pull_request:
   push:
+    branches: [main]
 jobs:
-  tests:
-    runs-on: ubuntu-latest
+  nix-fmt:
+    name: nix flake check
+    runs-on: {? {matrix.os: ''} : ''}
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "macos-latest"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Install Nix
-      uses: DeterminateSystems/nix-installer-action@v9
-    - name: Magic Nix Cache
-      uses: DeterminateSystems/magic-nix-cache-action@v2
-    - name: Test flake output
-      run: nix flake check
+      - uses: actions/checkout@v4
+      - uses: cachix/install-nix-action@v30
+      - run: nix flake check

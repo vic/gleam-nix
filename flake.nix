@@ -1,93 +1,43 @@
 {
-  inputs = {
-    gleam.url = "github:gleam-lang/gleam/v1.0.0";
-    gleam.flake = false;
+  description = "Develop gleam using nix";
 
-    flake-compat.url = "github:edolstra/flake-compat";
-    flake-compat.flake = false;
+  nixConfig = {
+    # We no longer ship gleam's Cargo.nix in this repo, since that was causing
+    # people to rely on the gleam pinned version.
+    # Instead we prefer to generate Cargo.nix from whatever is in gleam's repo.
+    # because of this, crate2nix needs this option enabled.
+    allow-import-from-derivation = true;
 
-    nixpkgs.url = "github:nixos/nixpkgs?ref=23.11";
-
-    cargo2nix.url = "github:cargo2nix/cargo2nix";
-    cargo2nix.inputs.nixpkgs.follows = "nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
-    rust-overlay.inputs.nixpkgs.follows = "nixpkgs";
-    rust-overlay.inputs.flake-utils.follows = "flake-utils";
+    extra-trusted-public-keys = [
+      "gleam-nix.cachix.org-1:JFm9l4KxdKyBNjQFxo/SF5SVjBTGvib/D877Zwf8C0s="
+    ];
+    extra-substituters = [ "https://gleam-nix.cachix.org" ];
   };
 
-  outputs = {
-    self,
-    gleam,
-    nixpkgs,
-    cargo2nix,
-    flake-utils,
-    rust-overlay,
-    ...
-  }:
-    flake-utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = import nixpkgs {
-          inherit system;
-          overlays = [
-            cargo2nix.overlays.default
-            rust-overlay.overlays.default
-          ];
-        };
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-        rustPkgs = pkgs.rustBuilder.makePackageSet {
-          rustChannel = "1.74.0";
-          packageFun = import ./Cargo.nix;
-          workspaceSrc = gleam;
-        };
+    gleam.url = "github:gleam-lang/gleam";
+    gleam.flake = false;
 
-        workspaceShell = rustPkgs.workspaceShell {
-          nativeBuildInputs = with pkgs; [rust-analyzer];
-        };
+    rust-manifest.url = "https://static.rust-lang.org/dist/channel-rust-1.85.0.toml";
+    rust-manifest.flake = false;
 
-        gleamBin = (rustPkgs.workspace.gleam {}).bin;
+    fenix.url = "github:nix-community/fenix";
+    fenix.inputs.nixpkgs.follows = "nixpkgs";
 
-        packages = {
-          gleam = gleamBin;
-          default = gleamBin;
-        };
+    crate2nix.url = "github:nix-community/crate2nix";
+    crate2nix.inputs.nixpkgs.follows = "nixpkgs";
 
-        devShells.default = workspaceShell;
+    blueprint.url = "github:numtide/blueprint";
+    blueprint.inputs.nixpkgs.follows = "nixpkgs";
 
-        apps = {
-          default = flake-utils.lib.mkApp {drv = gleamBin;};
+    devshell.url = "github:numtide/devshell";
+    devshell.inputs.nixpkgs.follows = "nixpkgs";
 
-          fmt = flake-utils.lib.mkApp {
-            drv = with pkgs;
-              writeScriptBin "fmt" ''
-                ${pkgs.alejandra}/bin/alejandra "$@" -e ./Cargo.nix .
-              '';
-          };
+    treefmt-nix.url = "github:numtide/treefmt-nix";
+    treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+  };
 
-          genCargoNix = flake-utils.lib.mkApp {
-            drv = with pkgs;
-              writeScriptBin "genCargoNix.bash" ''
-                set -xeuo pipefail
-                GLEAM_NIX="''${1:-$PWD}"
-                GLEAM_SRC="''${2:-${gleam}}"
-                ${cargo2nix.packages.${system}.default}/bin/cargo2nix "$GLEAM_SRC" --locked --file $GLEAM_NIX/Cargo.nix
-              '';
-          };
-        };
-
-        checks = {
-          gleamHello = with pkgs;
-            stdenvNoCC.mkDerivation {
-              name = "gleam-hello";
-              phases = ["test"];
-              test = ''
-                ${gleamBin}/bin/gleam --help > $out
-              '';
-            };
-        };
-      in {inherit packages devShells apps checks;}
-    )
-    // {
-      overlays.default = final: prev: {inherit (self.packages.${final.system}) gleam;};
-    };
+  outputs = inputs: inputs.blueprint { inherit inputs; };
 }

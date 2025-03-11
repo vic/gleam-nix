@@ -1,141 +1,123 @@
-# Reproducible builds for Gleam.
+# Gleam on Nix
 
-<pre>
- <code>
-  # If you already have Nix installed, try Gleam right away by using:
-  $ nix shell github:vic/gleam-nix
-  $ gleam --version
-  gleam <a href="https://github.com/gleam-lang/gleam/releases/v0.33.0">0.33.0</a>
- </code>
-</pre>
+This repo provides packages and [development shells][devshell] for
+working with [Gleam] projects using Nix.
 
-[![Build history](https://buildstats.info/github/chart/vic/gleam-nix?branch=main)](https://github.com/vic/gleam-nix/actions)
-
-###### Stable releases at nixpkgs#gleam
- 
-There exists an stable-release gleam derivation on nixpkgs. To use it, simply do:
+## Usage
 
 ```
-nix shell nixpkgs#gleam
-gleam --version
+# running `gleam --version`
+$ nix run github:vic/gleam-nix -- --version
+gleam 1.9.1
+
+# you can override gleam to any specific release/branch/fork.
+$ nix run github:vic/gleam-nix --override-input gleam "github:gleam-lang/gleam?ref=v1.9.0" -- --version
+gleam 1.9.0
 ```
 
-The flake provided on this repo is most likely to be used by people hacking on gleam itself or
-willing to build some experimental branches.
+### Hack with Gleam
 
-##### Requirements
+If you are creating a new awesome project with Gleam,
+this flake can provide you with a development environment
+containing `gleam` and two of its run-times: `erlang` and `nodejs`.
 
-For using this flake you'll need `nix` version [2.8](https://discourse.nixos.org/t/nix-2-8-0-released/18714)
-or latter which must have the [`flakes`](https://nixos.wiki/wiki/Flakes) feature enabled.
+```
+$ nix run github:vic/gleam-nix -- new my-new-project
+$ cd my-new-project
+$ nix develop github:vic/gleam-nix -c $SHELL -l
+```
 
-See [nix quick-install](https://nixos.org/download.html) or the [install-nix tutorial](https://nix.dev/tutorials/install-nix)
-for more in depth instructions.
-
-
-## Installing Gleam locally (~/.nix-profile)
+If you are using [direnv], create an `.envrc` file with
+the following content:
 
 ```shell
-# This will install Gleam from latest commit on main branch.
-nix profile install github:vic/gleam-nix --override-input gleam github:gleam-lang/gleam/main
-gleam --help
+# .envrc
+use flake github:vic/gleam-nix
 ```
 
-## Installing Gleam on a flake.
+### Hack on Gleam
 
-Using the overlay provided by this flake you can add Gleam to any
-NixOS system or flake-controlled project environment of yours.
-
-
-```nix
-{
-   inputs.gleam-nix.url = "github:vic/gleam-nix";
-
-   outputs = { gleam-nix, nixpkgs, ... }:
-     let
-      system = "aarch64-darwin"; # or anything you use.
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ gleam-nix.overlays.default ];
-      };
-     in {
-       packages.${system}.gleam = pkgs.gleam;
-     };
-}
-```
-
-
-## Developing Gleam with a Nix environment.
-
-Also, for Gleam developers, using Nix ensures we get the same
-development environment in an instant, all you have to do is
-checkout the Gleam repo and run:
+If you are willing to contribute to Gleam development,
+this flake can provide you an entire development environment
+ready for you to focus only on making Gleam awesome.
 
 ```shell
-nix develop github:vic/gleam-nix --override-input gleam path:$PWD 
-# open your editor and hack hack hack..
-cargo run # build dependencies are loaded in your shell
+$ git clone https://github.com/gleam-lang/gleam
+$ cd gleam
+$ nix develop github:vic/gleam-nix#hack-on-gleam --override-input gleam "path:$PWD" -c $SHELL -l
 ```
 
-Gleam maintainers can also use this to try PR experimental features
-from other contributors. Just override where the Gleam source
-comes from by specifying the repository/branch name.
+If you are using [direnv], create an `.envrc` file with
+the following content:
 
 ```shell
-# running gleam to try other people branches:
-nix shell github:vic/gleam-nix --override-input gleam github:<someone>/gleam/<cool-branch> -c gleam --help
+# .envrc
+use flake github:vic/gleam-nix#hack-on-gleam --override-input gleam "path:$PWD"
 ```
+
+### Hack on this repo
+
+```shell
+$ nix develop github:vic/gleam-nix#hack-on-gleam-nix -c $SHELL -l
+```
+
+If you are using [direnv] this repo already contains an `.envrc` you can load.
 
 ## Contributing
 
-Most of the time this flake should be able to build the latest Gleam source.
+- Try to keep your PR as minimal as possible.
 
-```
-# Test that the main branch or any other commit is buildable.
-nix flake run --override-input gleam github:gleam-lang/gleam/main -- --version
-```
+  For example if the Rust toolchain used by Gleam needs to be updated on
+  this repo, only include the changes from `nix flake update rust-manifest`
+  (after you updating the url on `flake.nix`).
 
-However, as Gleam development progresses, this flake might get outdated since
-dependencies to build Gleam might have changed. Most of the time, this should
-be fixed by regenerating the Cargo.nix file as instructed bellow.
+- Keep `gleam` source pointing to the `main` branch.
 
-If you contribute a PR, be sure to also update the latest Gleam version
-known to build at the first section of this document, so that people can
-use the git history if the need to find the commit that can build older versions.
+  Since this flake is intended for gleam developers and people trying to
+  use recent versions without having to wait on `nixpkgs`, we prefer to
+  not pinning to a particular Gleam release.
 
+## FAQ
 
-[Nix flakes](https://nixos.wiki/wiki/Flakes) are the secret sauce for nix reproducible builds.
-Since all build dependencies get hashed, even the source code.
-Every external dependency such external repos (e.g. nixpkgs), 
-external utilities (e.g. cargo llvm make), and any Cargo.toml
-workspace dependency (read from `Cargo.nix`) gets hashed so that
-nix only builds what has actually changed.
+- How is this different from the `gleam` package provided by `nixpkgs`.
 
-If you edit the `flake.nix` file, for example to change the rust
-toolchain or the nixpkgs revision, run `nix flake udpate` afterwards
-to regenerate the lock file.
+  This flake existed before we had an official `gleam` package on `nixpkgs`.
+  And most people would indeed only use that package.
 
-Also run `nix run '.#fmt'` to keep al nix files formatted before sending a PR.
+  However, for gleam hackers, this flake would be better suited since
+  it provides a development shell with dependencies based on Gleam's source.
 
-#### Regenerating `Cargo.nix`
+  Also people trying to use a more recent or experimental version of Gleam
+  will benefit from this flake.
 
-From time to time the `Cargo.nix` file needs to be re-generated
-by using [cargo2nix](https://github.com/cargo2nix/cargo2nix)
-in order to keep Gleam's cargo deps nix-controlled.
+- I'm getting a `option 'allow-import-from-derivation' is disabled` error.
 
-This is needed when Gleam introduces new dependencies or their versions get updated.
+  Old versions of this repo bundled a `Cargo.nix` file containing all of Gleam's
+  dependencies in order for nix to know how to fetch them and how to build the
+  Gleam cargo workspace.
 
-```shell
-nix run '.#genCargoNix'
-```
+  However, one inconvenience of this was that the `Cargo.nix` file was tied to
+  a particular Gleam revision, and since Gleam is improving quite rapidly, it
+  was not uncommon to find the `Cargo.nix` file on this repo being outdated with
+  respect to Gleam's source code.
 
-#### Updating nixpkgs version
+  People had to regularly re-create the `Cargo.nix` file with `cargo2nix`.
 
-By default this package will build using the latest stable nixpkgs release. 
-If you need to update to a most recent release, edit the `nixpkgs.url` line on flake.nix.
+  Now, instead of using `cargo2nix`, we use `crate2nix` which allows us to generate
+  the `Cargo.nix` file as part of the build. Thus not requiring we to bundle it
+  on this repo, and prevent it from getting outdated. One advantage is that using
+  `--override-input gleam <some-gleam-url>` will automatically generate `Cargo.nix`
+  for that particular gleam revision.
 
-#### Updating the rust toolchain.
+  This repo will only need to be updated when we have to bump the rust toolchain
+  as expected by Gleam.
 
-By default this package will build using the latest rust-stable version.
-If you need to update it, edit the `rustChannel` version at flake.nix.
+  On the other side, by not bundling a `Cargo.nix`, building with `crate2nix`
+  requires the `allow-import-from-derivation` nix option to be enabled.
 
+  This flake enables this option as part of `flake.nix` and will
+  be activated only if you are a trusted-user on your nix installation.
 
+[devshell]: https://numtide.github.io/devshell
+[direnv]: https://direnv.net
+[gleam]: https://gleam.run
