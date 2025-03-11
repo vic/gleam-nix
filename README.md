@@ -119,7 +119,8 @@ If you are using [direnv] this repo already contains an `.envrc` you can load.
   requires the `allow-import-from-derivation` nix option to be enabled.
 
   This flake enables this option as part of `flake.nix` and will
-  be activated only if you are a trusted-user on your nix installation.
+  be activated if you are listed as trusted-user in your `nix.conf` or
+  provide `--accept-flake-config` explicitly.
 
 [devshell]: https://numtide.github.io/devshell
 [direnv]: https://direnv.net
