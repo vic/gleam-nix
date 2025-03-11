@@ -17,3 +17,4 @@ jobs:
           name: gleam-nix
           authToken: '{{ secrets.CACHIX_AUTH_TOKEN }}'
       - run: nix flake check --accept-flake-config
+      - run: nix develop --accept-flake-config -c show-gleam-version
