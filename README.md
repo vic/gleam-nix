@@ -67,17 +67,11 @@ If you are using [direnv] this repo already contains an `.envrc` you can load.
 
 ## Contributing
 
-- Try to keep your PR as minimal as possible.
+Yes, please :).
 
-  For example if the Rust toolchain used by Gleam needs to be updated on
-  this repo, only include the changes from `nix flake update rust-manifest`
-  (after you updating the url on `flake.nix`).
-
-- Keep `gleam` source pointing to the `main` branch.
-
-  Since this flake is intended for gleam developers and people trying to
-  use recent versions without having to wait on `nixpkgs`, we prefer to
-  not pinning to a particular Gleam release.
+Try not to change `gleam` pinned release unless it no longer builds with
+the current Rust toolchain. In that case, update the `rust-manifest` input
+*and* the `gleam` pinned release. And please update [Historic Builds](https://github.com/vic/gleam-nix/wiki/Historic-Builds) with the range of known versions able to build.
 
 ## FAQ
 
