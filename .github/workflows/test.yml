@@ -3,12 +3,12 @@ on:
   push:
     branches: [main]
 jobs:
-  nix-fmt:
+  flake-check:
     name: nix flake check
-    runs-on: {? {matrix.os: ''} : ''}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ["ubuntu-latest", "macos-latest"]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: cachix/install-nix-action@v30
