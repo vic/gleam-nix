@@ -17,10 +17,10 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 
-    gleam.url = "github:gleam-lang/gleam";
+    gleam.url = "github:gleam-lang/gleam/v1.0.0";
     gleam.flake = false;
 
-    rust-manifest.url = "https://static.rust-lang.org/dist/channel-rust-1.85.0.toml";
+    rust-manifest.url = "https://static.rust-lang.org/dist/channel-rust-1.75.0.toml";
     rust-manifest.flake = false;
 
     fenix.url = "github:nix-community/fenix";

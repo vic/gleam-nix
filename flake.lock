@@ -592,15 +592,16 @@
     "gleam": {
       "flake": false,
       "locked": {
-        "lastModified": 1741625039,
-        "narHash": "sha256-ybWxG3oJ6gidwDvZSqQAZOjmKi0CYUX1ksU7QzOI9Ng=",
+        "lastModified": 1709557040,
+        "narHash": "sha256-gPlRihwK+J7s1SeymfVdVo/KIV+eEqxlLVOgsDWW9yo=",
         "owner": "gleam-lang",
         "repo": "gleam",
-        "rev": "ab3b38ac5faf416624938dc2f05d1c1a68791a1f",
+        "rev": "99de5d07c1f1aea0b36f543ec60c751be9ada240",
         "type": "github"
       },
       "original": {
         "owner": "gleam-lang",
+        "ref": "v1.0.0",
         "repo": "gleam",
         "type": "github"
       }
@@ -875,13 +876,13 @@
     "rust-manifest": {
       "flake": false,
       "locked": {
-        "narHash": "sha256-irgHsBXecwlFSdmP9MfGP06Cbpca2QALJdbN4cymcko=",
+        "narHash": "sha256-K9HAIB0ivQmPpCuWhuZPCBns4qir8hVp9FgcCxDDsXg=",
         "type": "file",
-        "url": "https://static.rust-lang.org/dist/channel-rust-1.85.0.toml"
+        "url": "https://static.rust-lang.org/dist/channel-rust-1.75.0.toml"
       },
       "original": {
         "type": "file",
-        "url": "https://static.rust-lang.org/dist/channel-rust-1.85.0.toml"
+        "url": "https://static.rust-lang.org/dist/channel-rust-1.75.0.toml"
       }
     },
     "systems": {
