@@ -60,7 +60,7 @@ use flake github:vic/gleam-nix#hack-on-gleam --override-input gleam "path:$PWD"
 ### Hack on this repo
 
 ```shell
-$ nix develop github:vic/gleam-nix#hack-on-gleam-nix -c $SHELL -l
+$ nix develop .#hack-on-gleam-nix -c $SHELL -l
 ```
 
 If you are using [direnv] this repo already contains an `.envrc` you can load.
@@ -68,6 +68,8 @@ If you are using [direnv] this repo already contains an `.envrc` you can load.
 ## Contributing
 
 Yes, please :).
+
+See [hack-on-gleam-nix](devshells/hack-on-gleam-nix.md)
 
 Try not to change `gleam` pinned release unless it no longer builds with
 the current Rust toolchain. In that case, update the `rust-manifest` input
