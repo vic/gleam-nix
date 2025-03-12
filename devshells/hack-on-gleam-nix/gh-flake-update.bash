@@ -14,6 +14,12 @@ fi
 
 echo "Running with CI=${CI} OUT=${OUT} ASSIGNEE=${ASSIGNEE}"
 
+GLEAM_HEAD="$(git ls-remote https://github.com/gleam-lang/gleam | grep 'HEAD' | cut -d '	' -f 1)"
+if grep "$GLEAM_HEAD" flake.lock; then
+  echo "Doing Nothing. Flake already points to gleam HEAD: $GLEAM_HEAD"
+  exit 0
+fi
+
 # Generate markdown code block with the result of running a command
 blockquote='```'
 singlequote='`'
