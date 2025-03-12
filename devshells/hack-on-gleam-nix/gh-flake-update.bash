@@ -135,5 +135,10 @@ else
     mdcode shell "$OUT/failure.md" "##### Nix build logs (*FAILURE*)" cat "$OUT"/failure.out
   fi
   gh pr comment "${pr_url}" --body-file "$OUT/failure.md"
-  gh pr comment "${pr_url}" --body "@${ASSIGNEE}, maybe this can be fixed by updating the URL for ${singlequote}inputs.rust-manifest${singlequote} on ${singlequote}flake.nix${singlequote}.\n\nBut I have not learned how to do that automatically."
+
+  bump-rust-manifest
+  mdcode diff "$OUT/bump.md" "Bumping ${singlequote}inputs.rust-manifest.url${singlequote} on ${singlequote}flake.nix${singlequote}\n\n\nBut not checking if URL is a valid release.\n\nYou may want to edit it at https://github.com/vic/gleam-nix/edit/${branch}/flake.nix#L23" git diff flake.nix
+  git_commit -F "$OUT/bump.md"
+  git push origin "$branch:$branch"
+  gh pr comment "${pr_url}" --body-file "$OUT/bump.md"
 fi

@@ -60,12 +60,34 @@ let
     dated = inputs.gleam.lastModifiedDate;
   };
 
+  rustBumpedVer =
+    with pkgs.lib;
+    pipe rustVer.version [
+      (splitString ".")
+      (
+        arr:
+        let
+          major = elemAt arr 0;
+          minor = elemAt arr 1;
+          micro = elemAt arr 2;
+          bump = toString (1 + (toInt minor));
+        in
+        [
+          major
+          bump
+          micro
+        ]
+      )
+      (concatStringsSep ".")
+    ];
+
 in
 {
   inherit
     gleam
     gleamVer
     rustVer
+    rustBumpedVer
     cargoNix
     gleamDevPackages
     devPackages

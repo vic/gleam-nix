@@ -50,6 +50,20 @@ let
       '';
   };
 
+  bump-rust-manifest = pkgs.writeShellApplication {
+    name = "bump-rust-manifest";
+    meta.description = "Bump rust-manifest version on flake.nix";
+    runtimeInputs = with pkgs; [ coreutils ];
+    text =
+      let
+        currVersion = gleamNix.rustVer.version;
+        nextVersion = gleamNix.rustBumpedVer;
+      in
+      ''
+        sed -i -e "s#channel-rust-${currVersion}.toml#channel-rust-${nextVersion}.toml#" flake.nix
+      '';
+  };
+
   gh-flake-update = pkgs.writeShellApplication {
     name = "gh-flake-update";
     meta.description = "Trying to run daily gleam on CI";
@@ -61,6 +75,7 @@ let
       coreutils
       show-rust-version
       show-gleam-version
+      bump-rust-manifest
     ];
     text = builtins.readFile ./hack-on-gleam-nix/gh-flake-update.bash;
   };
@@ -69,7 +84,10 @@ in
 perSystem.devshell.mkShell {
   imports = [ "${inputs.devshell}/extra/git/hooks.nix" ];
 
-  devshell.packages = [ gh-flake-update ];
+  devshell.packages = [
+    gh-flake-update
+    bump-rust-manifest
+  ];
 
   devshell.motd = ''
     $(${pkgs.lib.getExe pkgs.glow} ${./hack-on-gleam-nix.md})
