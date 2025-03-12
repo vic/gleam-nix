@@ -54,6 +54,7 @@ let
     name = "gh-flake-update";
     text = ''
       export LABEL="gleam-update"
+      export ASSIGNEE="vic"
 
       git config --local user.name "Victor Borja"
       git config --local user.email "vborja@apache.org"
@@ -119,11 +120,11 @@ let
         git status -s | grep 'M ' | cut -d 'M' -f 2 | xargs git add
         git commit -F /tmp/message.md --no-signoff --no-verify --trailer "request-checks:true" --no-edit --cleanup=verbatim
         git push origin "$branch:$branch" --force
-        gh pr create --base main --label "$LABEL,success,gleam-$gleam_version,rust-$rust_version" --reviewer "@me" --assignee "@me" --body-file /tmp/message.md --title "$title" --head "$branch" | tee /tmp/pr-url
+        gh pr create --base main --label "$LABEL,success,gleam-$gleam_version,rust-$rust_version" --reviewer "$ASSIGNEE" --assignee "$ASSIGNEE" --body-file /tmp/message.md --title "$title" --head "$branch" | tee /tmp/pr-url
         gh pr merge "$(< /tmp/pr-url)" --auto --delete-branch --rebase
       else
         title="Failed to build Gleam $gleam_rev";
-        gh issue create --label "$LABEL,failure,rust-$rust_version" --assignee "@me" --body-file /tmp/message.md --title "$title" | tee /tmp/issue-url
+        gh issue create --label "$LABEL,failure,rust-$rust_version" --assignee "$ASSIGNEE" --body-file /tmp/message.md --title "$title" | tee /tmp/issue-url
       fi
     '';
   };
