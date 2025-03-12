@@ -135,10 +135,5 @@ else
     mdcode shell "$OUT/failure.md" "##### Nix build logs (*FAILURE*)" cat "$OUT"/failure.out
   fi
   gh pr comment "${pr_url}" --body-file "$OUT/failure.md"
-
-  cat <<-EOF
-  Maybe this can be fixed by updating the URL for \`inputs.rust-manifest\` on \`flake.nix\`.
-  EOF > "$OUT/suggestion.md"
-  
-  gh pr comment "${pr_url}" --body-file "$OUT/suggestion.md"
+  gh pr comment "${pr_url}" --body "Maybe this can be fixed by updating the URL for ${singlequote}inputs.rust-manifest${singlequote} on ${singlequote}flake.nix${singlequote}.\n\nBut I have not learned how to do that automatically."
 fi
