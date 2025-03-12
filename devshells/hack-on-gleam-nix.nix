@@ -95,7 +95,7 @@ let
         echo -ne "\n\n\n\n"
       ) | tee /tmp/commit-message.md
 
-      gleam_rev="$(jq '.nodes.gleam.locked.rev' flake.lock)"
+      gleam_rev="$(jq -r '.nodes.gleam.locked.rev' flake.lock)"
       rust_url="$(grep "rust-manifest.url = " flake.nix | cut -d= -f2 | tr -d "\"; ")"
       (
         echo "Build of gleam [$gleam_rev](https://github.com/gleam-lang/gleam/tree/$gleam_rev)"
@@ -109,12 +109,12 @@ let
       )  >> /tmp/message.md
       cat /tmp/commit-message.md >> /tmp/message.md
 
-      rust_version="$(jq '.version' /tmp/rust-version.json)"
+      rust_version="$(jq -r '.version' /tmp/rust-version.json)"
 
       if test "0" -eq "$(< /tmp/build-status)"; then
         title="Successfuly built Gleam $gleam_rev";
 
-        gleam_version="$(jq '.gleam.version' /tmp/built-version.json)"
+        gleam_version="$(jq -r '.gleam.version' /tmp/built-version.json)"
 
         git status -s | grep 'M ' | cut -d 'M' -f 2 | xargs git add
         git commit -F /tmp/message.md --no-signoff --no-verify --trailer "request-checks:true" --no-edit --cleanup=verbatim
