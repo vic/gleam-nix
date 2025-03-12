@@ -122,7 +122,7 @@ pr_title="Update Gleam $arrow $status_emoji"
 gh pr create \
   --title "${pr_title}" --body-file "$OUT/output.md" \
   --base main --head "$branch" \
-  --label "${status_label},gleam-${next_gleam_ver},rust-${prev_rust_ver}" \
+  --label "${status_label},gleam-update,gleam-${next_gleam_ver},rust-${prev_rust_ver}" \
   --assignee "$ASSIGNEE" |
   tee "$OUT/pr-url"
 pr_url="$(<"$OUT/pr-url")"
@@ -130,7 +130,7 @@ pr_url="$(<"$OUT/pr-url")"
 if test -f "$OUT/success.out"; then
   gh pr merge "${pr_url}" --auto --delete-branch --rebase
 else
-
+  gh pr edit "${pr_url}" --add-label "good first issue"
   if test -f "$OUT/failure.out"; then
     mdcode shell "$OUT/failure.md" "##### Nix build logs (*FAILURE*)" cat "$OUT"/failure.out
   fi
