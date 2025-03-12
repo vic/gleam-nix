@@ -73,6 +73,12 @@ let
         echo '```'
         echo -ne "\n\n\n\n"
 
+        changes="$(git status -s | grep 'M ' | wc -l)"
+        if test "0" -eq "$changes"; then
+          echo "Nothing to do."
+          exit 0
+        fi
+
         echo 'Trying to build with: '
         echo '```json'
         jq -r '.nodes | ({ "gleam": .gleam.locked.rev, "rust": ."rust-manifest".original.url })' flake.lock
