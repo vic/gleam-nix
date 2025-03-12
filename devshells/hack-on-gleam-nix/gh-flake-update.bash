@@ -4,7 +4,7 @@
 # If successful, a new PR updating only flake.lock will be automatically created and merged.
 # Otherwise a new Issue will be created indicating the gleam revision that failed to build.
 
-set +e -x -u -o pipefail
+set -e -u -o pipefail
 
 if test -z "${CI:-}"; then
   echo "This program is inteded to be run as part of CI."
