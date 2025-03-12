@@ -111,11 +111,16 @@ let
       cat /tmp/commit-message.md >> /tmp/message.md
 
       rust_version="$(jq -r '.version' /tmp/rust-version.json)"
+      gh label create "$LABEL" -f
+      gh label create "success" -f
+      gh label create "failure" -f
+      gh label create "rust-$rust_version" -f
 
       if test "0" -eq "$(< /tmp/build-status)"; then
         title="Successfuly built Gleam $gleam_rev";
 
         gleam_version="$(jq -r '.gleam.version' /tmp/built-version.json)"
+        gh label create "gleam-$gleam_version" -f
 
         git status -s | grep 'M ' | cut -d 'M' -f 2 | xargs git add
         git commit -F /tmp/message.md --no-signoff --no-verify --trailer "request-checks:true" --no-edit --cleanup=verbatim
