@@ -44,7 +44,7 @@ mdcode json "$OUT/output.md" "Using Rust:" callback
 
 # shellcheck disable=SC2317
 function callback() {
-  nix flake update gleam 2>&1 | tee "$OUT"/flake-update.out
+  nix flake update gleam --accept-flake-config 2>&1 | tee "$OUT"/flake-update.out
 }
 # shellcheck disable=SC2016 # dont want backquote expansion
 mdcode shell "$OUT/output.md" 'Running `nix flake update gleam`' callback
@@ -57,13 +57,13 @@ fi
 
 # shellcheck disable=SC2317
 function callback() {
-  nix develop .#hack-on-gleam-nix -c show-gleam-version | tee "$OUT"/next-gleam.json
+  nix develop .#hack-on-gleam-nix --accept-flake-config -c show-gleam-version | tee "$OUT"/next-gleam.json
 }
 mdcode shell "$OUT/output.md" "Will update to Gleam:" callback
 
 # shellcheck disable=SC2317
 function callback() {
-  nix run .#gleam --print-build-logs -- --version 2>"$OUT/build.out"
+  nix run .#gleam --accept-flake-config --print-build-logs -- --version 2>"$OUT/build.out"
   if test "0" -eq "$?"; then
     mv "$OUT/build.out" "$OUT/success.out"
   else
