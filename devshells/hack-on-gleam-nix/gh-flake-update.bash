@@ -15,8 +15,9 @@ fi
 echo "Running with CI=${CI} OUT=${OUT} ASSIGNEE=${ASSIGNEE}"
 
 # Generate markdown code block with the result of running a command
+blockquote='```'
+singlequote='`'
 function mdcode() {
-  local blockquote='```'
   local blocktype="$1"
   shift
   local outfile="$1"
@@ -48,8 +49,8 @@ mdcode json "$OUT/output.md" "Using Rust:" callback
 function callback() {
   nix flake update gleam --accept-flake-config 2>&1 | tee "$OUT"/flake-update.out || true
 }
-# shellcheck disable=SC2016 # dont want backquote expansion
-mdcode shell "$OUT/output.md" 'Running `nix flake update gleam`' callback
+# shellcheck disable=SC2016
+mdcode shell "$OUT/output.md" "Running ${singlequote}nix flake update gleam${singlequote}" callback
 
 changes="$(git status -s | grep -c 'M ')"
 if test "0" -eq "$changes"; then
@@ -74,11 +75,8 @@ function callback() {
   fi
 }
 
-# shellcheck disable=SC2016 # dont want backquote expansion
-mdcode shell "$OUT/output.md" 'Building Gleam and running `gleam --version`:' callback
-if test -f "$OUT/failure.out"; then
-  mdcode shell "$OUT/output.md" "##### Nix build logs (*FAILURE*)" cat "$OUT"/failure.out
-fi
+# shellcheck disable=SC2016
+mdcode shell "$OUT/output.md" "Building Gleam and running ${singlequote}gleam --version${singlequote}:" callback
 
 ##
 # Preparing for generating a pull-request
@@ -102,11 +100,10 @@ else
   status_emoji="💥"
 fi
 
-gh label create gleam-update -f
-gh label create "$status_label" -f
-gh label create "rust-${prev_rust_ver}" -f
-gh label create "gleam-${prev_gleam_ver}" -f
-gh label create "gleam-${next_gleam_ver}" -f
+gh label list --search 'rust-|gleam-' --json name --jq '.[].name' >"$OUT/labels"
+grep "rust-${prev_rust_ver}" "$OUT/labels" || gh label create "rust-${prev_rust_ver}"
+grep "gleam-${prev_gleam_ver}" "$OUT/labels" || gh label create "gleam-${prev_gleam_ver}"
+grep "gleam-${next_gleam_ver}" "$OUT/labels" || gh label create "gleam-${next_gleam_ver}"
 
 arrow="${prev_gleam_ver} (${prev_gleam_rev}) -> ${next_gleam_ver} (${next_gleam_rev})"
 title="[gleam $status_emoji] $arrow"
@@ -114,21 +111,34 @@ echo -ne "${title}\n\n" | tee -a "$OUT/commit-message.md"
 echo -ne "*${status_label}*\n" | tee -a "$OUT/commit-message.md"
 mdcode json "$OUT/commit-message.md" "Previous Gleam:" cat "$OUT"/previous-gleam.json
 mdcode json "$OUT/commit-message.md" "Next Gleam:" cat "$OUT"/next-gleam.json
-mdcode json "$OUT/commit-message.md" "Using Rust:" cat "$OUT"/previous-rust.json
+mdcode json "$OUT/commit-message.md" "With Rust:" cat "$OUT"/previous-rust.json
 
 branch="update-gleam/${prev_gleam_rev}-to-${next_gleam_rev}"
 git checkout -b "$branch"
 git_commit -F "$OUT/commit-message.md"
 git push origin "$branch:$branch" --force
 
+pr_title="Update Gleam $arrow $status_emoji"
 gh pr create \
-  --title "$title" --body-file "$OUT/output.md" \
+  --title "${pr_title}" --body-file "$OUT/output.md" \
   --base main --head "$branch" \
   --label "${status_label},gleam-${next_gleam_ver},rust-${prev_rust_ver}" \
-  --reviewer "$ASSIGNEE" --assignee "$ASSIGNEE" |
+  --assignee "$ASSIGNEE" |
   tee "$OUT/pr-url"
 pr_url="$(<"$OUT/pr-url")"
 
 if test -f "$OUT/success.out"; then
   echo gh pr merge "${pr_url}" --auto --delete-branch --rebase
+else
+
+  if test -f "$OUT/failure.out"; then
+    mdcode shell "$OUT/failure.md" "##### Nix build logs (*FAILURE*)" cat "$OUT"/failure.out
+  fi
+  gh pr comment "${pr_url}" --body-file "$OUT/failure.md"
+
+  cat <<-EOF
+  Maybe this can be fixed by updating the URL for \`inputs.rust-manifest\` on \`flake.nix\`.
+  EOF > "$OUT/suggestion.md"
+  
+  gh pr comment "${pr_url}" --body-file "$OUT/suggestion.md"
 fi
