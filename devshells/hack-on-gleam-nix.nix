@@ -55,8 +55,8 @@ let
     text = ''
       export LABEL="gleam-update"
 
-      git config --local author.name "Victor Borja"
-      git config --local author.email "vborja@apache.org"
+      git config --local user.name "Victor Borja"
+      git config --local user.email "vborja@apache.org"
 
       branch="gleam-update-$(date '+%F')"
       git checkout -b "$branch"
