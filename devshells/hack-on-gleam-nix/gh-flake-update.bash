@@ -137,8 +137,23 @@ else
   gh pr comment "${pr_url}" --body-file "$OUT/failure.md"
 
   bump-rust-manifest
-  mdcode diff "$OUT/bump.md" "Bumping ${singlequote}inputs.rust-manifest.url${singlequote} on ${singlequote}flake.nix${singlequote}\n\n\nBut not checking if URL is a valid release.\n\nYou may want to edit it at https://github.com/vic/gleam-nix/edit/${branch}/flake.nix#L23" git diff flake.nix
-  git_commit -F "$OUT/bump.md"
+  bump_message="$(
+    echo -ne "Bumping ${singlequote}inputs.rust-manifest.url${singlequote} on ${singlequote}flake.nix${singlequote}\n\n\n"
+    echo -ne "${blockquote}diff\n"
+    git diff flake.nix
+    echo -ne "${blockquote}\n"
+    echo -ne "But currently I have not learned how check if new URL is a valid stable release.\n"
+    echo -ne "You may want to edit my changes at https://github.com/vic/gleam-nix/edit/${branch}/flake.nix#L23\n"
+    echo -ne "\n\n"
+    echo -ne "Also, you might want to run the following command locally and override the correct versions to fix this build.\n"
+    echo -ne "${blockquote}shell\n"
+    echo -ne "nix run github:vic/gleam-nix " \
+      "--override-input gleam github:gleam-lang/gleam/${next_gleam_rev} " \
+      "--override-input rust-manifest file+https://static.rust-lang.org/dist/channel-rust-${prev_rust_ver}.toml " \
+      "-- --version\n"
+    echo -ne "${blockquote}\n"
+  )"
+  git_commit --message "$bump_message"
   git push origin "$branch:$branch"
-  gh pr comment "${pr_url}" --body-file "$OUT/bump.md"
+  gh pr comment "${pr_url}" --body "$bump_message"
 fi

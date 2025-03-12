@@ -10,8 +10,8 @@ working with [Gleam] projects using Nix.
 $ nix run github:vic/gleam-nix -- --version
 gleam 1.9.0
 
-# you can override gleam to any specific release/branch/fork.
-$ nix run github:vic/gleam-nix --override-input gleam "github:gleam-lang/gleam?ref=main" -- --version
+# you can also override to use any gleam revision (commit,branch,release) and any rust version (prefer stable releases)
+$ nix run github:vic/gleam-nix --override-input gleam github:gleam-lang/gleam/v1.9.1 --override-input rust-manifest file+https://static.rust-lang.org/dist/channel-rust-1.85.0.toml -- --version
 gleam 1.9.1
 ```
 
