@@ -16,12 +16,12 @@ echo "Running with CI=${CI} OUT=${OUT} ASSIGNEE=${ASSIGNEE}"
 
 # Generate markdown code block with the result of running a command
 function mdcode() {
-  blockquote='```'
-  blocktype="$1"
+  local blockquote='```'
+  local blocktype="$1"
   shift
-  outfile="$1"
+  local outfile="$1"
   shift
-  title="$1"
+  local title="$1"
   shift
   test -z "$1" && return 1
   (
@@ -121,7 +121,12 @@ git checkout -b "$branch"
 git_commit -F "$OUT/commit-message.md"
 git push origin "$branch:$branch" --force
 
-gh pr create --base main --label "${status_label},gleam-${next_gleam_ver},gleam-${prev_gleam_ver},rust-${prev_rust_ver}" --reviewer "$ASSIGNEE" --assignee "$ASSIGNEE" --body-file "$OUT/output.md" --title "$title" --head "$branch" | tee "$OUT/pr-url"
+gh pr create \
+  --title "$title" --body-file "$OUT/output.md" \
+  --base main --head "$branch" \
+  --label "${status_label},gleam-${next_gleam_ver},rust-${prev_rust_ver}" \
+  --reviewer "$ASSIGNEE" --assignee "$ASSIGNEE" |
+  tee "$OUT/pr-url"
 pr_url="$(<"$OUT/pr-url")"
 
 if test -f "$OUT/success.out"; then
