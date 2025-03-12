@@ -73,7 +73,7 @@ let
         echo '```'
         echo -ne "\n\n\n\n"
 
-        changes="$(git status -s | grep 'M ' | wc -l)"
+        changes="$(git status -s | grep -c 'M ')"
         if test "0" -eq "$changes"; then
           echo "Nothing to do."
           exit 0
