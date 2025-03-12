@@ -107,7 +107,7 @@ let
         echo '```'
         echo -ne "\n\n\n\n"
       )  >> /tmp/message.md
-      cat /tmp/commit-message >> /tmp/message.md
+      cat /tmp/commit-message.md >> /tmp/message.md
 
       rust_version="$(jq '.version' /tmp/rust-version.json)"
 
@@ -123,7 +123,6 @@ let
         gh pr merge "$(< /tmp/pr-url)" --auto --delete-branch --rebase
       else
         title="Failed to build Gleam $gleam_rev";
-        cat /tmp/commit-message >> /tmp/message.md
         gh issue create --label "$LABEL,failure,rust-$rust_version" --assignee "@me" --body-file /tmp/message.md --title "$title" | tee /tmp/issue-url
       fi
     '';
