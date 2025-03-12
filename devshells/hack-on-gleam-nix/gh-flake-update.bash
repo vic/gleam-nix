@@ -110,13 +110,13 @@ gh label create "gleam-${next_gleam_ver}" -f
 
 arrow="${prev_gleam_ver} (${prev_gleam_rev}) -> ${next_gleam_ver} (${next_gleam_rev})"
 title="[gleam $status_emoji] $arrow"
-echo -ne "${title}\n\n" >"$OUT/commit-message.md"
-echo -ne "*${status_label}*\n" >"$OUT/commit-message.md"
+echo -ne "${title}\n\n" | tee -a "$OUT/commit-message.md"
+echo -ne "*${status_label}*\n" | tee -a "$OUT/commit-message.md"
 mdcode json "$OUT/commit-message.md" "Previous Gleam:" cat "$OUT"/previous-gleam.json
 mdcode json "$OUT/commit-message.md" "Next Gleam:" cat "$OUT"/next-gleam.json
 mdcode json "$OUT/commit-message.md" "Using Rust:" cat "$OUT"/previous-rust.json
 
-branch="update-gleam-${prev_gleam_rev}-to-${next_gleam_rev}"
+branch="update-gleam/${prev_gleam_rev}-to-${next_gleam_rev}"
 git checkout -b "$branch"
 git_commit -F "$OUT/commit-message.md"
 git push origin "$branch:$branch" --force
@@ -125,5 +125,5 @@ gh pr create --base main --label "${status_label},gleam-${next_gleam_ver},gleam-
 pr_url="$(<"$OUT/pr-url")"
 
 if test -f "$OUT/success.out"; then
-  gh pr merge "${pr_url}" --auto --delete-branch --rebase
+  echo gh pr merge "${pr_url}" --auto --delete-branch --rebase
 fi
