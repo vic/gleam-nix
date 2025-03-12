@@ -4,6 +4,8 @@
 # If successful, a new PR updating only flake.lock will be automatically created and merged.
 # Otherwise a new Issue will be created indicating the gleam revision that failed to build.
 
+set +e -x -u -o pipefail
+
 if test -z "${CI:-}"; then
   echo "This program is inteded to be run as part of CI."
   echo "If you still wish to run it, make sure all environment variables are set."
@@ -44,7 +46,7 @@ mdcode json "$OUT/output.md" "Using Rust:" callback
 
 # shellcheck disable=SC2317
 function callback() {
-  nix flake update gleam --accept-flake-config 2>&1 | tee "$OUT"/flake-update.out
+  nix flake update gleam --accept-flake-config 2>&1 | tee "$OUT"/flake-update.out || true
 }
 # shellcheck disable=SC2016 # dont want backquote expansion
 mdcode shell "$OUT/output.md" 'Running `nix flake update gleam`' callback
