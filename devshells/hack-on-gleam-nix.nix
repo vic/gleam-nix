@@ -6,44 +6,44 @@
   ...
 }:
 let
-  gleamNix = pkgs.callPackage ../gleam.nix { inherit inputs; };
+  gleamNix = inputs.self.lib.gleam-nix pkgs;
 
-  treefmt = {
+  treefmt = pkgs.writeShellApplication {
     name = "treefmt";
-    help = pkgs.treefmt.meta.description;
-    command = ''
+    meta.description = pkgs.treefmt.meta.description;
+    text = ''
       ${pkgs.lib.getExe inputs.self.formatter.${pkgs.system}} "''${@}"
     '';
   };
 
-  generate-gleam-cargo-nix = {
+  generate-gleam-cargo-nix = pkgs.writeShellApplication {
     name = "generate-gleam-cargo-nix";
-    help = "Generate Cargo.nix from gleam sources";
-    command = ''
+    meta.description = "Generate Cargo.nix from gleam sources";
+    text = ''
       ln -sfn ${gleamNix.cargoNix} ./result
       ln -sfn ${gleamNix.cargoNix}/default.nix ./Cargo.nix
       echo "Generated files at ./result -> ${gleamNix.cargoNix}"
     '';
   };
 
-  show-gleam-version = {
+  show-gleam-version = pkgs.writeShellApplication {
     name = "show-gleam-version";
-    help = "Display gleam revision and version";
-    command =
+    meta.description = "Display gleam revision and version";
+    text =
       let
-        file = pkgs.writeText "gleam.json" (builtins.toJSON gleamNix.versionInfo);
+        file = pkgs.writeText "gleam.json" (builtins.toJSON gleamNix.gleamVer);
       in
       ''
         ${pkgs.lib.getExe pkgs.jq} -r . ${file}
       '';
   };
 
-  show-rust-version = {
+  show-rust-version = pkgs.writeShellApplication {
     name = "show-rust-version";
-    help = "Display rust revision and version";
-    command =
+    meta.description = "Display rust revision and version";
+    text =
       let
-        file = pkgs.writeText "gleam.json" (builtins.toJSON gleamNix.rustVersionInfo);
+        file = pkgs.writeText "gleam.json" (builtins.toJSON gleamNix.rustVer);
       in
       ''
         ${pkgs.lib.getExe pkgs.jq} -r . ${file}
@@ -52,92 +52,17 @@ let
 
   gh-flake-update = pkgs.writeShellApplication {
     name = "gh-flake-update";
-    text = ''
-      export LABEL="gleam-update"
-      export ASSIGNEE="vic"
-
-      git config --local user.name "Victor Borja"
-      git config --local user.email "vborja@apache.org"
-
-      branch="gleam-update-$(date '+%F')"
-      git checkout -b "$branch"
-      title="Updating gleam input $(date)"
-
-      (
-        echo "$title"
-        echo -ne "\n\n\n\n"
-
-        echo '```shell'
-        echo '$ nix flake update gleam'
-        nix flake update gleam --accept-flake-config 2>&1
-        echo '```'
-        echo -ne "\n\n\n\n"
-
-        changes="$(git status -s | grep -c 'M ')"
-        if test "0" -eq "$changes"; then
-          echo "Nothing to do."
-          exit 0
-        fi
-
-        echo 'Trying to build with: '
-        echo '```json'
-        jq -r '.nodes | ({ "gleam": .gleam.locked.rev, "rust": ."rust-manifest".original.url })' flake.lock
-        echo '```'
-        echo -ne "\n\n\n\n"
-
-        echo 'building gleam... '
-        nix develop .#hack-on-gleam-nix --quiet --accept-flake-config -c show-rust-version > /tmp/rust-version.json
-        nix develop .#hack-on-gleam-nix --quiet --accept-flake-config -c show-gleam-version > /tmp/built-version.json
-        echo "$?" > /tmp/build-status
-        if test "0" -eq "$(< /tmp/build-status)"; then
-          echo -e '\n_SUCCESS_'
-
-          echo '```json'
-          echo '# built-version.json'
-          cat /tmp/built-version.json
-          echo '```'
-        else
-          echo -e '\n_FAILURE_'
-        fi
-        echo -ne "\n\n\n\n"
-      ) | tee /tmp/commit-message.md
-
-      gleam_rev="$(jq -r '.nodes.gleam.locked.rev' flake.lock)"
-      rust_url="$(grep "rust-manifest.url = " flake.nix | cut -d= -f2 | tr -d "\"; ")"
-      (
-        echo "Build of gleam [$gleam_rev](https://github.com/gleam-lang/gleam/tree/$gleam_rev)"
-        echo "With rust-manifest: $rust_url"
-        echo -ne "\n\n\n\n"
-        echo '```json'
-        echo '# rust-version.json'
-        cat /tmp/rust-version.json
-        echo '```'
-        echo -ne "\n\n\n\n"
-      )  >> /tmp/message.md
-      cat /tmp/commit-message.md >> /tmp/message.md
-
-      rust_version="$(jq -r '.version' /tmp/rust-version.json)"
-      gh label create "$LABEL" -f
-      gh label create "success" -f
-      gh label create "failure" -f
-      gh label create "rust-$rust_version" -f
-
-      if test "0" -eq "$(< /tmp/build-status)"; then
-        title="Successfuly built Gleam $gleam_rev";
-
-        gleam_version="$(jq -r '.gleam.version' /tmp/built-version.json)"
-        gh label create "gleam-$gleam_version" -f
-
-        git status -s | grep 'M ' | cut -d 'M' -f 2 | xargs git add
-        git commit -F /tmp/message.md --no-signoff --no-verify --trailer "request-checks:true" --no-edit --cleanup=verbatim
-        git push origin "$branch:$branch" --force
-        gh pr create --base main --label "$LABEL,success,gleam-$gleam_version,rust-$rust_version" --reviewer "$ASSIGNEE" --assignee "$ASSIGNEE" --body-file /tmp/message.md --title "$title" --head "$branch" | tee /tmp/pr-url
-        gh pr merge "$(< /tmp/pr-url)" --auto --delete-branch --rebase
-      else
-        title="Failed to build Gleam $gleam_rev";
-        gh issue create --label "$LABEL,failure,rust-$rust_version" --assignee "$ASSIGNEE" --body-file /tmp/message.md --title "$title" | tee /tmp/issue-url
-      fi
-    '';
+    meta.description = "Trying to run daily gleam on CI";
+    runtimeInputs = with pkgs; [
+      jq
+      gh
+      git
+      nix
+      coreutils
+      show-rust-version
+      show-gleam-version
+    ];
+    text = builtins.readFile ./hack-on-gleam-nix/gh-flake-update.bash;
   };
 
 in
@@ -157,10 +82,10 @@ perSystem.devshell.mkShell {
   '';
 
   commands = [
-    treefmt
-    generate-gleam-cargo-nix
-    show-gleam-version
-    show-rust-version
+    { package = treefmt; }
+    { package = generate-gleam-cargo-nix; }
+    { package = show-gleam-version; }
+    { package = show-rust-version; }
   ];
 
 }

@@ -7,6 +7,12 @@ let
     programs.deadnix.enable = true;
     programs.mdformat.enable = true;
     programs.yamlfmt.enable = true;
+    programs.shfmt.enable = true;
+    programs.shellcheck.enable = true;
+    programs.shellcheck.excludes = [
+      ".envrc"
+      ".direnv"
+    ];
   };
 in
 treefmt.config.build.wrapper

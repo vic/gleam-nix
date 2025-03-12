@@ -6,7 +6,7 @@
   ...
 }:
 let
-  gleamNix = pkgs.callPackage ../gleam.nix { inherit inputs; };
+  gleamNix = inputs.self.lib.gleam-nix pkgs;
 
   glow = pkgs.lib.getExe pkgs.glow;
   gum = pkgs.lib.getExe pkgs.gum;
@@ -27,6 +27,12 @@ let
     '';
   };
 
+  motd = ''
+    $(${glow} ${./hack-on-gleam.md})
+
+    $(menu)
+  '';
+
   confirm-gen-envrc = ''
     No .envrc found.
 
@@ -34,11 +40,21 @@ let
 
   '';
 
+  gen-envrc = ''
+    # if direnv is available and no .envrc file is found, ask to generate one.
+    if (type -p direnv 2>&1>/dev/null) && (! test -f .envrc) && (${gum} confirm "${confirm-gen-envrc}"); then
+      echo .envrc  >> .git/info/exclude
+      echo .direnv >> .git/info/exclude
+      echo "use flake github:vic/gleam-nix#hack-on-gleam" >> .envrc
+      direnv allow
+    fi
+  '';
+
 in
 perSystem.devshell.mkShell {
 
   devshell.packages = pkgs.lib.attrValues gleamNix.gleamDevPackages;
-  devshell.packagesFrom = [ gleamNix ];
+  devshell.packagesFrom = [ perSystem.self.gleam ];
 
   commands = [
     {
@@ -50,20 +66,8 @@ perSystem.devshell.mkShell {
     codeOfConductCommand
   ];
 
-  devshell.motd = ''
-    $(${glow} ${./hack-on-gleam.md})
+  devshell.motd = motd;
 
-    $(menu)
-  '';
-
-  devshell.interactive.gen-envrc.text = ''
-    # if direnv is available and no .envrc file is found, ask to generate one.
-    if (type -p direnv 2>&1>/dev/null) && (! test -f .envrc) && (${gum} confirm "${confirm-gen-envrc}"); then
-      echo .envrc  >> .git/info/exclude
-      echo .direnv >> .git/info/exclude
-      echo "use flake github:vic/gleam-nix#hack-on-gleam" >> .envrc
-      direnv allow
-    fi
-  '';
+  devshell.interactive.gen-envrc.text = gen-envrc;
 
 }

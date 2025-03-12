@@ -1,1 +1,1 @@
-{ pkgs, inputs, ... }: pkgs.callPackage ../gleam.nix { inherit inputs; }
+{ pkgs, inputs, ... }: (inputs.self.lib.gleam-nix pkgs).gleam

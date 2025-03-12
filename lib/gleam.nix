@@ -1,24 +1,24 @@
 { inputs, pkgs }:
 let
-  pkgs' = pkgs.extend (import ./rust-overlay.nix inputs);
-  tools = pkgs'.callPackage "${inputs.crate2nix}/tools.nix" { };
+  tools = pkgs.callPackage "${inputs.crate2nix}/tools.nix" { };
+
   cargoNix =
     (tools.generatedCargoNix {
       name = "gleam";
       src = inputs.gleam;
     }).overrideAttrs
       (prev: {
-        buildInputs = [ pkgs'.rustc ] ++ prev.buildInputs;
+        buildInputs = [ pkgs.rustc ] ++ prev.buildInputs;
       });
 
-  called = pkgs'.callPackage cargoNix { };
+  called = pkgs.callPackage cargoNix { };
 
   # A derivation for building gleam itself
   gleam = called.workspaceMembers.gleam.build;
 
   # Packages for people hackin on gleam source.
   gleamDevPackages = {
-    inherit (pkgs')
+    inherit (pkgs)
       cargo
       rustc
       rustfmt
@@ -32,7 +32,7 @@ let
   devPackages = {
     inherit gleam;
 
-    inherit (pkgs')
+    inherit (pkgs)
       erlang
       rebar3
       nodejs
@@ -40,32 +40,32 @@ let
   };
 
   # Access to the fenix overlay rust toolchains.
-  inherit (pkgs') fenixPackages;
+  inherit (pkgs) fenixPackages;
 
-  rustVersionInfo =
-    with pkgs'.lib;
+  rustVer =
+    with pkgs.lib;
     pipe fenixPackages.manifest.pkg.rust.version [
       (replaceStrings [ "(" ")" ] [ "" "" ])
       (splitString " ")
       (arr: {
         version = elemAt arr 0;
-        rev = elemAt arr 1;
-        release = elemAt arr 2;
+        revision = elemAt arr 1;
+        dated = elemAt arr 2;
       })
     ];
 
-  versionInfo = {
-    gleam.rev = inputs.gleam.shortRev;
-    gleam.version = gleam.version;
-    rust = rustVersionInfo;
+  gleamVer = {
+    version = gleam.version;
+    revision = inputs.gleam.shortRev;
+    dated = inputs.gleam.lastModifiedDate;
   };
 
 in
-gleam
-// {
+{
   inherit
-    versionInfo
-    rustVersionInfo
+    gleam
+    gleamVer
+    rustVer
     cargoNix
     gleamDevPackages
     devPackages
