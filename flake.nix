@@ -28,6 +28,12 @@
 
     crate2nix.url = "github:nix-community/crate2nix";
     crate2nix.inputs.nixpkgs.follows = "nixpkgs";
+    crate2nix.inputs.devshell.follows = "devshell";
+    crate2nix.inputs.pre-commit-hooks.follows = "pre-commit-hooks";
+    # Disable dev dependencies
+    crate2nix.inputs.crate2nix_stable.follows = "";
+    crate2nix.inputs.cachix.follows = "";
+    crate2nix.inputs.nix-test-runner.follows = "";
 
     blueprint.url = "github:numtide/blueprint";
     blueprint.inputs.nixpkgs.follows = "nixpkgs";
@@ -37,6 +43,11 @@
 
     treefmt-nix.url = "github:numtide/treefmt-nix";
     treefmt-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
+    pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
+    pre-commit-hooks.inputs.gitignore.follows = "";
+    pre-commit-hooks.inputs.flake-compat.follows = "";
   };
 
   outputs = inputs: inputs.blueprint { inherit inputs; };
