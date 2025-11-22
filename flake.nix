@@ -20,7 +20,7 @@
     gleam.url = "github:gleam-lang/gleam";
     gleam.flake = false;
 
-    rust-manifest.url = "file+https://static.rust-lang.org/dist/channel-rust-1.85.0.toml";
+    rust-manifest.url = "file+https://static.rust-lang.org/dist/channel-rust-1.91.1.toml";
     rust-manifest.flake = false;
 
     fenix.url = "github:nix-community/fenix";

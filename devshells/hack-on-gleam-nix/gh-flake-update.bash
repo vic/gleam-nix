@@ -39,19 +39,19 @@ function mdcode() {
   ) | tee -a "$outfile"
 }
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function callback() {
   show-gleam-version | tee "$OUT"/previous-gleam.json
 }
 mdcode json "$OUT/output.md" "Updating FROM Gleam:" callback
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function callback() {
   show-rust-version | tee "$OUT"/previous-rust.json
 }
 mdcode json "$OUT/output.md" "Using Rust:" callback
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function callback() {
   nix flake update gleam --accept-flake-config 2>&1 | tee "$OUT"/flake-update.out || true
 }
@@ -64,13 +64,13 @@ if test "0" -eq "$changes"; then
   exit 0
 fi
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function callback() {
   nix develop .#hack-on-gleam-nix --accept-flake-config -c show-gleam-version | tee "$OUT"/next-gleam.json
 }
 mdcode shell "$OUT/output.md" "Will update to Gleam:" callback
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function callback() {
   nix run .#gleam --accept-flake-config --print-build-logs -- --version 2>"$OUT/build.out"
   if test "0" -eq "$?"; then
