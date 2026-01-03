@@ -131,11 +131,11 @@
     "gleam": {
       "flake": false,
       "locked": {
-        "lastModified": 1766339256,
-        "narHash": "sha256-NhIkspu4LtKQYbbd+hOj6LBpDiEyPQ2HtVzfvAQRF8k=",
+        "lastModified": 1766946665,
+        "narHash": "sha256-4CL24VME0xp902wQcK09mzly5BXeiDBrgNgfTbFMDw0=",
         "owner": "gleam-lang",
         "repo": "gleam",
-        "rev": "a8570896347a9c70f2ee772819703bc4fe41cec0",
+        "rev": "f424547f02e621f1c5f28749786e05eda7feb098",
         "type": "github"
       },
       "original": {
